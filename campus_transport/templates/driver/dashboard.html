@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block page_title %}Driver Dashboard{% endblock %}
+{% block content %}
+<div class="metric-grid">
+    <article class="metric-card"><span class="meta">Trips Logged</span><strong>{{ history_count }}</strong></article>
+    <article class="metric-card"><span class="meta">Incidents Reported</span><strong>{{ incident_count }}</strong></article>
+</div>
+<div class="panel-grid">
+    <section class="card">
+        <h3>Today's Assignment</h3>
+        {% if trip %}
+            <p><strong>{{ trip.schedule.route.name }}</strong></p>
+            <p>{{ trip.trip_date }} at {{ trip.scheduled_departure }} using {{ trip.schedule.vehicle.plate_number }}</p>
+            <span class="status-pill {{ trip.status }}">{{ trip.get_status_display }}</span>
+            <form method="post" action="{% url 'trips:update' trip.id %}" class="form-grid" style="margin-top:18px;">
+                {% csrf_token %}
+                <div>
+                    <label>Status</label>
+                    <select name="status">
+                        {% for value, label in trip_status_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Note</label>
+                    <textarea name="note" placeholder="Describe the status or any issue"></textarea>
+                </div>
+                <div>
+                    <label>Latitude</label>
+                    <input type="number" step="0.0000001" name="latitude">
+                </div>
+                <div>
+                    <label>Longitude</label>
+                    <input type="number" step="0.0000001" name="longitude">
+                </div>
+                <button class="button" type="submit">Submit Update</button>
+            </form>
+        {% else %}
+            <p>No assigned trip for today.</p>
+        {% endif %}
+    </section>
+    <section class="card">
+        <h3>Quick Actions</h3>
+        <a class="button" href="{% url 'incidents:create' %}">Report Incident</a>
+        <a class="button button-ghost" href="{% url 'trips:history' %}">View Trip History</a>
+    </section>
+</div>
+{% endblock %}

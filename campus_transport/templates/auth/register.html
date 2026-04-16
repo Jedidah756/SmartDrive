@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Register | {{ institution_name }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+    <div class="auth-card">
+        <p class="eyebrow">Student Onboarding</p>
+        <h1>Create your transport account</h1>
+        <form method="post" class="form-grid">
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% render_field field %}
+                    {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+                </div>
+            {% endfor %}
+            {% for error in form.non_field_errors %}<small>{{ error }}</small>{% endfor %}
+            <button class="button" type="submit">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

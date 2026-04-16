@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ institution_name }}{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body data-maps-key="{{ google_maps_api_key }}">
+    <div class="app-shell">
+        {% if request.user.is_authenticated %}
+            <aside class="sidebar" id="sidebar">
+                <div>
+                    <div class="sidebar-brand">
+                        <span class="sidebar-kicker">Campus Transit</span>
+                        <h1>{{ institution_name }}</h1>
+                    </div>
+                    <nav class="sidebar-nav">
+                        <a href="{% url 'accounts:dashboard-redirect' %}">Dashboard</a>
+                        {% if request.user.is_student %}
+                            <a href="{% url 'accounts:student-dashboard' %}">My Trips</a>
+                            <a href="{% url 'bookings:list' %}">Bookings</a>
+                            <a href="{% url 'feedback:list' %}">Feedback</a>
+                        {% endif %}
+                        {% if request.user.is_driver %}
+                            <a href="{% url 'accounts:driver-dashboard' %}">Assigned Trip</a>
+                            <a href="{% url 'incidents:list' %}">Incidents</a>
+                            <a href="{% url 'trips:history' %}">Trip History</a>
+                        {% endif %}
+                        {% if request.user.is_transport_admin or request.user.is_super_admin %}
+                            <a href="{% url 'accounts:admin-dashboard' %}">Operations</a>
+                            <a href="{% url 'vehicles:list' %}">Vehicles</a>
+                            <a href="{% url 'routes:list' %}">Routes</a>
+                            <a href="{% url 'schedules:list' %}">Schedules</a>
+                            <a href="{% url 'reports:dashboard' %}">Reports</a>
+                        {% endif %}
+                        {% if request.user.is_super_admin %}
+                            <a href="/django-admin/">Django Admin</a>
+                        {% endif %}
+                    </nav>
+                </div>
+                <div class="sidebar-footer">
+                    <p>{{ request.user.get_full_name|default:request.user.username }}</p>
+                    <form method="post" action="{% url 'accounts:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="button button-ghost">Sign out</button>
+                    </form>
+                </div>
+            </aside>
+        {% endif %}
+        <main class="content">
+            {% if request.user.is_authenticated %}
+                <header class="topbar">
+                    <button class="nav-toggle" type="button" data-toggle-sidebar>Menu</button>
+                    <div>
+                        <span class="eyebrow">Transport Operations</span>
+                        <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+                    </div>
+                </header>
+            {% endif %}
+            <section class="page-body">
+                {% if messages %}
+                    <div class="toast-stack">
+                        {% for message in messages %}
+                            <div class="toast {{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% block content %}{% endblock %}
+            </section>
+        </main>
+    </div>
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

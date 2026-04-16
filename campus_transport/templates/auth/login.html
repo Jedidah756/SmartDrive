@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Sign In | {{ institution_name }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+    <div class="auth-card">
+        <p class="eyebrow">University Transport</p>
+        <h1>Sign in to continue</h1>
+        <p>Access live transport operations, dashboards, and reporting with your institutional account.</p>
+        <form method="post" class="form-grid">
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% render_field field %}
+                    {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+                </div>
+            {% endfor %}
+            {% for error in form.non_field_errors %}<small>{{ error }}</small>{% endfor %}
+            <button class="button" type="submit">Sign In</button>
+        </form>
+        <p>New student? <a href="{% url 'accounts:register' %}">Create an account</a>.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block page_title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="metric-grid">
+    <article class="metric-card"><span class="meta">Active Buses</span><strong>{{ active_buses }}</strong></article>
+    <article class="metric-card"><span class="meta">Trips Today</span><strong>{{ trips_today }}</strong></article>
+    <article class="metric-card"><span class="meta">My Bookings</span><strong>{{ student_bookings }}</strong></article>
+    <article class="metric-card"><span class="meta">Incidents This Week</span><strong>{{ incidents_this_week }}</strong></article>
+</div>
+<div class="panel-grid">
+    <section class="card">
+        <div class="section-heading"><h3>Upcoming Trips</h3></div>
+        {% for trip in upcoming_trips %}
+            <div class="card" style="margin-top:12px;">
+                <strong>{{ trip.schedule.route.name }}</strong>
+                <p>{{ trip.trip_date }} at {{ trip.scheduled_departure }} via {{ trip.schedule.vehicle.plate_number }}</p>
+                <span class="status-pill {{ trip.status }}">{{ trip.get_status_display }}</span>
+            </div>
+        {% empty %}
+            <p>No bookings yet. Reserve a seat to see trips here.</p>
+        {% endfor %}
+        <a class="button" href="{% url 'bookings:create' %}">Reserve a Seat</a>
+    </section>
+    <section class="card map-panel">
+        <div class="section-heading"><h3>Live Transport Map</h3></div>
+        <div id="student-map" class="map-canvas skeleton" data-live-map data-endpoint="{% url 'trips:api-live' %}"></div>
+    </section>
+</div>
+<section class="table-card">
+    <h3>Feedback History</h3>
+    <table>
+        <thead><tr><th>Route</th><th>Rating</th><th>Comment</th><th>Response</th></tr></thead>
+        <tbody>
+            {% for item in route_feedback %}
+                <tr>
+                    <td>{{ item.trip.schedule.route.name }}</td>
+                    <td>{{ item.rating }}/5</td>
+                    <td>{{ item.comment }}</td>
+                    <td>{{ item.admin_response|default:"Pending" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No feedback submitted yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
+<script>
+const liveMapNode = document.querySelector("[data-live-map]");
+if (liveMapNode && window.google) {
+  const map = new google.maps.Map(liveMapNode, {
+    center: { lat: -1.286389, lng: 36.817223 },
+    zoom: 12,
+    styles: [{ elementType: "geometry", stylers: [{ color: "#0a1628" }] }]
+  });
+  const markers = {};
+  const refresh = async () => {
+    const response = await fetch(liveMapNode.dataset.endpoint);
+    const payload = await response.json();
+    payload.results.forEach((bus) => {
+      const position = { lat: bus.latitude, lng: bus.longitude };
+      if (!markers[bus.trip_id]) {
+        markers[bus.trip_id] = new google.maps.Marker({ map, position, title: bus.route });
+      } else {
+        markers[bus.trip_id].setPosition(position);
+      }
+    });
+  };
+  refresh();
+  setInterval(refresh, 15000);
+}
+</script>
+{% endblock %}

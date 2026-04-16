@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block page_title %}Vehicles{% endblock %}
+{% block content %}
+<section class="table-card">
+    <a class="button" href="{% url 'vehicles:create' %}">Add Vehicle</a>
+    <table>
+        <thead><tr><th>Plate Number</th><th>Model</th><th>Capacity</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+            {% for vehicle in vehicles %}
+                <tr>
+                    <td>{{ vehicle.plate_number }}</td>
+                    <td>{{ vehicle.model }}</td>
+                    <td>{{ vehicle.capacity }}</td>
+                    <td>{{ vehicle.get_status_display }}</td>
+                    <td><a href="{% url 'vehicles:edit' vehicle.pk %}">Edit</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

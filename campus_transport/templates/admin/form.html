@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block page_title %}Manage Record{% endblock %}
+{% block content %}
+<section class="card">
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {% render_field field %}
+                {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+            </div>
+        {% endfor %}
+        <button class="button" type="submit">Save</button>
+    </form>
+</section>
+{% endblock %}

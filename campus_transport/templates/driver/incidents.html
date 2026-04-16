@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block page_title %}Incidents{% endblock %}
+{% block content %}
+<section class="table-card">
+    <a class="button" href="{% url 'incidents:create' %}">New Incident</a>
+    <table>
+        <thead><tr><th>Trip</th><th>Severity</th><th>Description</th><th>Reported</th></tr></thead>
+        <tbody>
+            {% for incident in incidents %}
+                <tr>
+                    <td>{{ incident.trip.schedule.route.name }}</td>
+                    <td>{{ incident.get_severity_display }}</td>
+                    <td>{{ incident.description }}</td>
+                    <td>{{ incident.reported_at }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No incident reports yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
