@@ -14,7 +14,7 @@ Campus Transport is a Django-based university transport platform for students, d
 ## Tech Stack
 
 - Django 5
-- MySQL
+- SQLite for local development, MySQL optional for deployment/demo parity
 - HTML, CSS, and vanilla JavaScript
 - Google Maps JavaScript API
 - Chart.js
@@ -29,8 +29,8 @@ Campus Transport is a Django-based university transport platform for students, d
 pip install -r requirements.txt
 ```
 
-3. Copy `.env.example` to `.env` and update database plus Google Maps settings.
-4. Create a MySQL database named `campus_transport`.
+3. Copy `.env.example` to `.env`.
+4. For quick local setup, leave `DB_ENGINE=sqlite`.
 5. Run migrations:
 
 ```bash
@@ -67,4 +67,4 @@ python manage.py runserver
 
 - The project uses session authentication and Django's built-in admin as the fallback super admin interface.
 - JSON endpoints under `/trips/api/` are designed for 15-second frontend polling.
-- If `mysqlclient` is difficult to install on Windows, you can temporarily switch the `DATABASES` setting to SQLite for development.
+- To use MySQL instead, set `DB_ENGINE=mysql` in `.env`, make sure the MySQL service is running, and create a `campus_transport` database first.

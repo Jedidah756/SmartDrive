@@ -3,23 +3,52 @@
 {% block title %}Sign In | {{ institution_name }}{% endblock %}
 {% block content %}
 <div class="auth-wrap">
-    <div class="auth-card">
-        <p class="eyebrow">University Transport</p>
-        <h1>Sign in to continue</h1>
-        <p>Access live transport operations, dashboards, and reporting with your institutional account.</p>
-        <form method="post" class="form-grid">
-            {% csrf_token %}
-            {% for field in form %}
-                <div>
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {% render_field field %}
-                    {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
-                </div>
-            {% endfor %}
-            {% for error in form.non_field_errors %}<small>{{ error }}</small>{% endfor %}
-            <button class="button" type="submit">Sign In</button>
-        </form>
-        <p>New student? <a href="{% url 'accounts:register' %}">Create an account</a>.</p>
-    </div>
+    <section class="auth-stage">
+        <div class="auth-showcase">
+            <span class="eyebrow">University Transport</span>
+            <h1>Sign in to your campus transit workspace.</h1>
+            <p>Monitor shuttle operations, view your bookings, and move through the day with a cleaner transport experience.</p>
+            <div class="auth-feature-list">
+                <article class="auth-feature">
+                    <strong>Live route visibility</strong>
+                    <p>See active shuttles, departures, and service updates in one place.</p>
+                </article>
+                <article class="auth-feature">
+                    <strong>Student-first booking flow</strong>
+                    <p>Reserve seats quickly and keep upcoming trips within reach.</p>
+                </article>
+                <article class="auth-feature">
+                    <strong>Operational feedback loop</strong>
+                    <p>Share trip feedback and track responses without leaving the platform.</p>
+                </article>
+            </div>
+        </div>
+
+        <div class="auth-card auth-form-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Welcome Back</span>
+                <h2>Sign in</h2>
+                <p>Use your institutional account to continue.</p>
+            </div>
+
+            <form method="post" class="form-grid auth-form">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="field-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% render_field field class+="auth-input" placeholder=field.label %}
+                        {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+                    </div>
+                {% endfor %}
+                {% for error in form.non_field_errors %}<small>{{ error }}</small>{% endfor %}
+                <button class="button auth-submit" type="submit">Sign In</button>
+            </form>
+
+            <div class="auth-footnote">
+                <p>New student?</p>
+                <a href="{% url 'accounts:register' %}">Create an account</a>
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock %}

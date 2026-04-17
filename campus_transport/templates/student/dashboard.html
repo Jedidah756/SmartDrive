@@ -2,33 +2,90 @@
 {% block title %}Student Dashboard{% endblock %}
 {% block page_title %}Student Dashboard{% endblock %}
 {% block content %}
+<section class="hero-card">
+    <div class="hero-copy">
+        <span class="eyebrow">Student Mobility Hub</span>
+        <h1>Move through campus with less guesswork.</h1>
+        <p>Track active shuttles, keep upcoming rides in view, and stay ahead of delays from one dashboard.</p>
+        <div class="hero-actions">
+            <a class="button" href="{% url 'bookings:create' %}">Reserve a Seat</a>
+            <a class="button button-ghost" href="{% url 'bookings:list' %}">View My Bookings</a>
+        </div>
+    </div>
+    <div class="hero-orbit">
+        <div class="hero-route-card">
+            <span class="meta">Transit Pulse</span>
+            <strong>{{ active_buses }} buses live now</strong>
+            <p>{{ trips_today }} scheduled trips are active across campus routes today.</p>
+        </div>
+        <div class="hero-route-line"></div>
+    </div>
+</section>
 <div class="metric-grid">
-    <article class="metric-card"><span class="meta">Active Buses</span><strong>{{ active_buses }}</strong></article>
-    <article class="metric-card"><span class="meta">Trips Today</span><strong>{{ trips_today }}</strong></article>
-    <article class="metric-card"><span class="meta">My Bookings</span><strong>{{ student_bookings }}</strong></article>
-    <article class="metric-card"><span class="meta">Incidents This Week</span><strong>{{ incidents_this_week }}</strong></article>
+    <article class="metric-card">
+        <span class="meta">Active Buses</span>
+        <strong>{{ active_buses }}</strong>
+        <p>Currently moving on university routes.</p>
+    </article>
+    <article class="metric-card">
+        <span class="meta">Trips Today</span>
+        <strong>{{ trips_today }}</strong>
+        <p>Departures scheduled for the current day.</p>
+    </article>
+    <article class="metric-card">
+        <span class="meta">My Bookings</span>
+        <strong>{{ student_bookings }}</strong>
+        <p>Seats you have reserved so far.</p>
+    </article>
+    <article class="metric-card">
+        <span class="meta">Incidents This Week</span>
+        <strong>{{ incidents_this_week }}</strong>
+        <p>Operational issues reported across the network.</p>
+    </article>
 </div>
 <div class="panel-grid">
     <section class="card">
-        <div class="section-heading"><h3>Upcoming Trips</h3></div>
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Schedule</span>
+                <h3>Upcoming Trips</h3>
+            </div>
+        </div>
         {% for trip in upcoming_trips %}
-            <div class="card" style="margin-top:12px;">
-                <strong>{{ trip.schedule.route.name }}</strong>
-                <p>{{ trip.trip_date }} at {{ trip.scheduled_departure }} via {{ trip.schedule.vehicle.plate_number }}</p>
-                <span class="status-pill {{ trip.status }}">{{ trip.get_status_display }}</span>
+            <div class="sub-card trip-card">
+                <div>
+                    <strong>{{ trip.schedule.route.name }}</strong>
+                    <p>{{ trip.trip_date }} at {{ trip.scheduled_departure }}</p>
+                </div>
+                <div class="trip-card-meta">
+                    <span>{{ trip.schedule.vehicle.plate_number }}</span>
+                    <span class="status-pill {{ trip.status }}">{{ trip.get_status_display }}</span>
+                </div>
             </div>
         {% empty %}
-            <p>No bookings yet. Reserve a seat to see trips here.</p>
+            <div class="empty-state">
+                <h4>No bookings yet</h4>
+                <p>Reserve a seat to see your next shuttle, route, and departure time here.</p>
+            </div>
         {% endfor %}
-        <a class="button" href="{% url 'bookings:create' %}">Reserve a Seat</a>
     </section>
     <section class="card map-panel">
-        <div class="section-heading"><h3>Live Transport Map</h3></div>
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Live Tracking</span>
+                <h3>Live Transport Map</h3>
+            </div>
+        </div>
         <div id="student-map" class="map-canvas skeleton" data-live-map data-endpoint="{% url 'trips:api-live' %}"></div>
     </section>
 </div>
 <section class="table-card">
-    <h3>Feedback History</h3>
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Student Voice</span>
+            <h3>Feedback History</h3>
+        </div>
+    </div>
     <table>
         <thead><tr><th>Route</th><th>Rating</th><th>Comment</th><th>Response</th></tr></thead>
         <tbody>

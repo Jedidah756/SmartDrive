@@ -13,6 +13,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body data-maps-key="{{ google_maps_api_key }}">
+    <div class="app-backdrop"></div>
     <div class="app-shell">
         {% if request.user.is_authenticated %}
             <aside class="sidebar" id="sidebar">
@@ -46,6 +47,7 @@
                     </nav>
                 </div>
                 <div class="sidebar-footer">
+                    <span class="sidebar-user-label">Signed in as</span>
                     <p>{{ request.user.get_full_name|default:request.user.username }}</p>
                     <form method="post" action="{% url 'accounts:logout' %}">
                         {% csrf_token %}
@@ -58,9 +60,13 @@
             {% if request.user.is_authenticated %}
                 <header class="topbar">
                     <button class="nav-toggle" type="button" data-toggle-sidebar>Menu</button>
-                    <div>
+                    <div class="topbar-copy">
                         <span class="eyebrow">Transport Operations</span>
                         <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+                    </div>
+                    <div class="topbar-status">
+                        <span class="status-dot"></span>
+                        System online
                     </div>
                 </header>
             {% endif %}
@@ -68,7 +74,7 @@
                 {% if messages %}
                     <div class="toast-stack">
                         {% for message in messages %}
-                            <div class="toast {{ message.tags }}">{{ message }}</div>
+                            <div class="toast {{ message.tags }}" data-auto-dismiss>{{ message }}</div>
                         {% endfor %}
                     </div>
                 {% endif %}

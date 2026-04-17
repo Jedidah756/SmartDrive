@@ -3,21 +3,50 @@
 {% block title %}Register | {{ institution_name }}{% endblock %}
 {% block content %}
 <div class="auth-wrap">
-    <div class="auth-card">
-        <p class="eyebrow">Student Onboarding</p>
-        <h1>Create your transport account</h1>
-        <form method="post" class="form-grid">
-            {% csrf_token %}
-            {% for field in form %}
-                <div>
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {% render_field field %}
-                    {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
-                </div>
-            {% endfor %}
-            {% for error in form.non_field_errors %}<small>{{ error }}</small>{% endfor %}
-            <button class="button" type="submit">Register</button>
-        </form>
-    </div>
+    <section class="auth-stage">
+        <div class="auth-showcase">
+            <span class="eyebrow">Student Onboarding</span>
+            <h1>Create your transport account in minutes.</h1>
+            <p>Set up your student access once and get instant entry to bookings, live route visibility, and feedback tools.</p>
+            <div class="auth-stat-grid">
+                <article class="auth-stat">
+                    <span class="meta">Access</span>
+                    <strong>24/7</strong>
+                    <p>Bookings and trip updates from any device.</p>
+                </article>
+                <article class="auth-stat">
+                    <span class="meta">Support</span>
+                    <strong>Fast</strong>
+                    <p>Clear routing and incident visibility across campus.</p>
+                </article>
+            </div>
+        </div>
+
+        <div class="auth-card auth-form-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Registration</span>
+                <h2>Create account</h2>
+                <p>Fill in your details to activate student transport access.</p>
+            </div>
+
+            <form method="post" class="form-grid auth-form">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="field-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% render_field field class+="auth-input" placeholder=field.label %}
+                        {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+                    </div>
+                {% endfor %}
+                {% for error in form.non_field_errors %}<small>{{ error }}</small>{% endfor %}
+                <button class="button auth-submit" type="submit">Create Account</button>
+            </form>
+
+            <div class="auth-footnote">
+                <p>Already registered?</p>
+                <a href="{% url 'accounts:login' %}">Back to sign in</a>
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock %}

@@ -1,6 +1,7 @@
 Django==5.1.4
-mysqlclient==2.2.6
+# mysqlclient==2.2.6  # Skipped for SQLite
 python-dotenv==1.0.1
 WeasyPrint==63.1
 reportlab==4.2.5
 django-widget-tweaks==1.5.0
+bcrypt==4.2.1
