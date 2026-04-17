@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 from dotenv import load_dotenv
 
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -61,21 +63,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "campus_transport.wsgi.application"
 
-DB_ENGINE = os.getenv("DB_ENGINE", "sqlite").lower()
-
-if DB_ENGINE == "mysql":
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("DB_NAME", "campus_transport"),
-            "USER": os.getenv("DB_USER", "root"),
-            "PASSWORD": os.getenv("DB_PASSWORD", ""),
-            "HOST": os.getenv("DB_HOST", "127.0.0.1"),
-            "PORT": os.getenv("DB_PORT", "3306"),
-            "OPTIONS": {
-                "charset": "utf8mb4",
-            },
-        }
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
 else:
     # SQLite is the default local-development database so the project can run without extra services.
@@ -101,8 +92,12 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"

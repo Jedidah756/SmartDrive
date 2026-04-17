@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: smart-drive
+    env: python
+    plan: free
+    branch: main
+    root: campus_transport
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn campus_transport.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "*.onrender.com"
+      - key: GOOGLE_MAPS_API_KEY
+        value: ""
+      - key: DJANGO_SECRET_KEY
+        value: ""
+      - key: DATABASE_URL
+        value: ""
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "*.onrender.com"
+      - key: GOOGLE_MAPS_API_KEY
+        value: ""
+
+databases:
+  - name: smart-drive-db
+    environment: postgresql
+    plan: free
