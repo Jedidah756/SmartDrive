@@ -10,7 +10,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
-ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if host.strip()]
+
+allowed_hosts_env = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
+ALLOWED_HOSTS = []
+for host in allowed_hosts_env.split(","):
+    host = host.strip()
+    if not host:
+        continue
+    if host == "*":
+        ALLOWED_HOSTS = ["*"]
+        break
+    if host.startswith("*."):
+        host = "." + host[2:]
+    ALLOWED_HOSTS.append(host)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
