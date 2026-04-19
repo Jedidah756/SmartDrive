@@ -41,9 +41,10 @@ class Command(BaseCommand):
         vehicle_rows = [
             ("KDA-101A", "Toyota Coaster", 32, Vehicle.Status.ACTIVE),
             ("KDA-102B", "Isuzu FRR", 45, Vehicle.Status.ACTIVE),
-            ("KDA-103C", "Nissan Civilian", 28, Vehicle.Status.MAINTENANCE),
-            ("KDA-104D", "Mitsubishi Rosa", 30, Vehicle.Status.ACTIVE),
-            ("KDA-105E", "Hyundai County", 29, Vehicle.Status.INACTIVE),
+            ("KDA-103C", "Nissan Civilian", 28, Vehicle.Status.ACTIVE),
+            ("KMC-001M", "Bajaj RE Motorbike", 3, Vehicle.Status.ACTIVE),
+            ("KMC-002M", "TVS King Motorbike", 3, Vehicle.Status.ACTIVE),
+            ("KMC-003M", "Piaggio Ape Motorbike", 4, Vehicle.Status.ACTIVE),
         ]
         vehicles = []
         for plate, model, capacity, status in vehicle_rows:
@@ -54,11 +55,11 @@ class Command(BaseCommand):
             vehicles.append(vehicle)
 
         route_rows = [
-            ("Main Campus Loop", "Main Gate", "Library", Decimal("4.20"), [{"name": "Main Gate", "lat": -1.286389, "lng": 36.817223}, {"name": "Science Block", "lat": -1.284900, "lng": 36.819300}, {"name": "Library", "lat": -1.283500, "lng": 36.821000}]),
-            ("Hostels Express", "North Hostels", "Main Campus", Decimal("6.80"), [{"name": "North Hostels", "lat": -1.290500, "lng": 36.812500}, {"name": "Sports Complex", "lat": -1.288000, "lng": 36.815900}, {"name": "Main Campus", "lat": -1.286389, "lng": 36.817223}]),
-            ("Westlands Shuttle", "Westlands", "Main Campus", Decimal("11.50"), [{"name": "Westlands", "lat": -1.267600, "lng": 36.810800}, {"name": "Museum Hill", "lat": -1.273800, "lng": 36.813900}, {"name": "Main Campus", "lat": -1.286389, "lng": 36.817223}]),
-            ("CBD Connector", "CBD Terminal", "Main Campus", Decimal("8.40"), [{"name": "CBD Terminal", "lat": -1.286000, "lng": 36.821900}, {"name": "Haile Selassie", "lat": -1.285200, "lng": 36.824900}, {"name": "Main Campus", "lat": -1.286389, "lng": 36.817223}]),
-            ("Karen Route", "Karen Centre", "Main Campus", Decimal("14.30"), [{"name": "Karen Centre", "lat": -1.319700, "lng": 36.706400}, {"name": "Langata Road", "lat": -1.309100, "lng": 36.776800}, {"name": "Main Campus", "lat": -1.286389, "lng": 36.817223}]),
+            ("Eldoret Express", "Eldoret", "Kapsabet", Decimal("35.00"), [{"name": "Eldoret", "lat": 0.5171, "lng": 35.2909}, {"name": "Mosoriot", "lat": 0.4000, "lng": 35.2000}, {"name": "Lessos", "lat": 0.3000, "lng": 35.1000}, {"name": "Kapsabet", "lat": 0.2083, "lng": 35.0050}]),
+            ("Nandi Hills Shuttle", "Kapsabet", "Nandi Hills", Decimal("25.00"), [{"name": "Kapsabet", "lat": 0.2083, "lng": 35.0050}, {"name": "Kabiyet", "lat": 0.1900, "lng": 35.0200}, {"name": "Namgoi", "lat": 0.1800, "lng": 34.9900}, {"name": "Nandi Hills", "lat": 0.1333, "lng": 35.1833}]),
+            ("Baraton University Line", "Kapsabet", "Baraton", Decimal("15.00"), [{"name": "Kapsabet", "lat": 0.2083, "lng": 35.0050}, {"name": "Chepterit", "lat": 0.2300, "lng": 35.0300}, {"name": "Kapkangani", "lat": 0.2200, "lng": 35.0500}, {"name": "Baraton", "lat": 0.2400, "lng": 35.0700}]),
+            ("Kaiboi Tech Route", "Kapsabet", "Kaiboi", Decimal("20.00"), [{"name": "Kapsabet", "lat": 0.2083, "lng": 35.0050}, {"name": "Kilibwoni", "lat": 0.1950, "lng": 34.9800}, {"name": "Ol'Lessos", "lat": 0.1850, "lng": 35.0100}, {"name": "Kaiboi", "lat": 0.1700, "lng": 35.0400}]),
+            ("Motorbike Quick Link", "Eldoret", "Mosoriot", Decimal("18.00"), [{"name": "Eldoret", "lat": 0.5171, "lng": 35.2909}, {"name": "Mugundoi", "lat": 0.4600, "lng": 35.2500}, {"name": "Mosoriot", "lat": 0.4000, "lng": 35.2000}]),
         ]
         routes = []
         for name, start, end, distance, stops in route_rows:
@@ -81,7 +82,7 @@ class Command(BaseCommand):
                 vehicle=vehicles[index % len(vehicles)],
                 driver=drivers[index % len(drivers)],
                 departure_time=time(7 + index, 0),
-                defaults={"days_of_week": ["monday", "tuesday", "wednesday", "thursday", "friday"]},
+                defaults={"days_of_week": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]},
             )
             schedules.append(schedule)
 

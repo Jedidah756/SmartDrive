@@ -4,8 +4,8 @@ services:
     env: python
     plan: free
     branch: main
-    buildCommand: pip install -r campus_transport/requirements.txt && cd campus_transport && python manage.py collectstatic --noinput && python manage.py migrate
-    startCommand: gunicorn --chdir campus_transport campus_transport.wsgi:application --bind 0.0.0.0:$PORT
+    buildCommand: pip install -r campus_transport/requirements.txt && cd campus_transport && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py seed_demo
+    startCommand: gunicorn --chdir campus_transport --log-level debug campus_transport.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: DJANGO_DEBUG
         value: "false"

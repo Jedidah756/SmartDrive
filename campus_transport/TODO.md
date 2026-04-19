@@ -8,4 +8,4 @@
 - [x] Test: refresh browser dashboards
 - [x] Server running
 - [x] Demo seeded
-- [x] Render.yaml updated: migrate in buildCommand
+- [x] Render.yaml updated: migrate and collectstatic in buildCommand

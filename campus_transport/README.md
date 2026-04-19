@@ -68,3 +68,7 @@ python manage.py runserver
 - The project uses session authentication and Django's built-in admin as the fallback super admin interface.
 - JSON endpoints under `/trips/api/` are designed for 15-second frontend polling.
 - To use MySQL instead, set `DB_ENGINE=mysql` in `.env`, make sure the MySQL service is running, and create a `campus_transport` database first.
+
+## Deployment Notes
+**Build Command (Root):** `pip install -r campus_transport/requirements.txt && cd campus_transport && python manage.py collectstatic --noinput && python manage.py migrate`
+**Start Command (Root):** `gunicorn --chdir campus_transport campus_transport.wsgi:application --bind 0.0.0.0:$PORT`

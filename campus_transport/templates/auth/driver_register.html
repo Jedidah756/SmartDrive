@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Driver Register | {{ institution_name }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+    <section class="auth-stage">
+        <div class="auth-showcase">
+            <span class="eyebrow">Driver Onboarding</span>
+            <h1>Join our driver network.</h1>
+            <p>Sign up to access routes, live bookings, trip management and earnings tracking.</p>
+            <div class="auth-stat-grid">
+                <article class="auth-stat">
+                    <span class="meta">Routes</span>
+                    <strong>Daily</strong>
+                    <p>Multiple schedules across Eldoret region.</p>
+                </article>
+                <article class="auth-stat">
+                    <span class="meta">Payouts</span>
+                    <strong>Weekly</strong>
+                    <p>Fast settlements for completed trips.</p>
+                </article>
+            </div>
+        </div>
+
+        <div class="auth-card auth-form-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Driver Registration</span>
+                <h2>Join fleet</h2>
+                <p>Complete details to activate driver account.</p>
+            </div>
+
+            <form method="post" class="form-grid auth-form">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="field-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% render_field field class+="auth-input" placeholder=field.label %}
+                        {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+                    </div>
+                {% endfor %}
+                {% for error in form.non_field_errors %}<small>{{ error }}</small>{% endfor %}
+                <button class="button auth-submit" type="submit">Join Fleet</button>
+            </form>
+
+            <div class="auth-footnote">
+                <p>Already registered?</p>
+                <a href="{% url 'accounts:login' %}">Back to sign in</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

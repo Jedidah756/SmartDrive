@@ -17,6 +17,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=32, choices=Role.choices)
     student_id = models.CharField(max_length=32, blank=True)
     employee_id = models.CharField(max_length=32, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    driver_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)

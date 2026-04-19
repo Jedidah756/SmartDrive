@@ -7,13 +7,16 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, RedirectView, TemplateView, CreateView
 
+import logging
+logger = logging.getLogger(__name__)
+
 from apps.feedback.models import Feedback
 from apps.incidents.models import Incident
 from apps.schedules.services import ensure_daily_trips
 from apps.trips.models import Trip
 from apps.vehicles.models import Vehicle
 
-from .forms import LoginForm, StudentRegistrationForm
+from .forms import LoginForm, StudentRegistrationForm, DriverRegistrationForm
 from .mixins import RoleRequiredMixin
 from .models import User
 
@@ -56,11 +59,24 @@ class StudentRegisterView(CreateView):
         return super().form_valid(form)
 
 
+class DriverRegisterView(CreateView):
+    template_name = "auth/driver_register.html"
+    form_class = DriverRegistrationForm
+    success_url = reverse_lazy("accounts:login")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Driver registration complete. You can now sign in.")
+        return super().form_valid(form)
+
+
 class DashboardRedirectView(LoginRequiredMixin, RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        ensure_daily_trips()
+        try:
+            ensure_daily_trips()
+        except Exception as e:
+            logger.error(f"Failed to ensure daily trips: {e}")
         if self.request.user.is_student:
             return reverse_lazy("accounts:student-dashboard")
         if self.request.user.is_driver:
