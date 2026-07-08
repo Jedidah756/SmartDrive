@@ -14,7 +14,7 @@ services:
       - key: DATABASE_URL
         value: ""
       - key: DJANGO_ALLOWED_HOSTS
-        value: "smartdrive-4.onrender.com"
+        value: "smartdrive-4.onrender.com,127.0.0.1,localhost"
       - key: GOOGLE_MAPS_API_KEY
         value: ""
 
