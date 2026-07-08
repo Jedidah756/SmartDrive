@@ -8,7 +8,7 @@ services:
     startCommand: gunicorn --chdir campus_transport --log-level debug campus_transport.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: DJANGO_DEBUG
-        value: "false"
+        value: "true"
       - key: DJANGO_SECRET_KEY
         value: ""
       - key: DATABASE_URL
