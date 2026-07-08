@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block page_title %}Bus Schedules{% endblock %}
+{% block content %}
+<section class="table-card">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Campus Routes</span>
+            <h3>Active Schedules</h3>
+        </div>
+        <a class="button" href="{% url 'bookings:create' %}">Reserve a Seat</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Departure</th>
+                <th>Vehicle</th>
+                <th>Driver</th>
+                <th>Days</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+                <tr>
+                    <td>{{ schedule.route.name }}</td>
+                    <td>{{ schedule.route.start_point }}</td>
+                    <td>{{ schedule.route.end_point }}</td>
+                    <td>{{ schedule.departure_time }}</td>
+                    <td>{{ schedule.vehicle.plate_number }} ({{ schedule.vehicle.model }})</td>
+                    <td>{{ schedule.driver.name }}</td>
+                    <td>{{ schedule.days_of_week|join:", " }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7">No active schedules available.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

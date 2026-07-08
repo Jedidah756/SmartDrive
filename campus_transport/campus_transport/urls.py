@@ -15,8 +15,9 @@ urlpatterns = [
     path("feedback/", include(("apps.feedback.urls", "feedback"), namespace="feedback")),
     path("incidents/", include(("apps.incidents.urls", "incidents"), namespace="incidents")),
     path("reports/", include(("apps.reports.urls", "reports"), namespace="reports")),
+    path("notifications/", include(("apps.notifications.urls", "notifications"), namespace="notifications")),
 ]
 
+urlpatterns += staticfiles_urlpatterns()
 if settings.DEBUG:
-    urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

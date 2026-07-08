@@ -10,10 +10,16 @@ from .models import Schedule
 
 
 class ScheduleListView(RoleRequiredMixin, ListView):
-    template_name = "admin/schedules.html"
     context_object_name = "schedules"
-    model = Schedule
-    allowed_roles = (User.Role.TRANSPORT_ADMIN, User.Role.SUPER_ADMIN)
+    allowed_roles = (User.Role.STUDENT, User.Role.TRANSPORT_ADMIN, User.Role.SUPER_ADMIN)
+
+    def get_template_names(self):
+        if self.request.user.is_student:
+            return ["student/schedules.html"]
+        return ["admin/schedules.html"]
+
+    def get_queryset(self):
+        return Schedule.objects.filter(status=Schedule.Status.ACTIVE).select_related("route", "vehicle", "driver")
 
 
 class ScheduleCreateView(RoleRequiredMixin, CreateView):

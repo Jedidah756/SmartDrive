@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "apps.feedback",
     "apps.incidents",
     "apps.reports",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [
@@ -80,8 +81,19 @@ if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
+elif os.getenv("DB_ENGINE", "sqlite") == "mysql":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("DB_NAME", "campus_transport"),
+            "USER": os.getenv("DB_USER", "root"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+            "PORT": os.getenv("DB_PORT", "3306"),
+            "OPTIONS": {"charset": "utf8mb4"},
+        }
+    }
 else:
-    # SQLite is the default local-development database so the project can run without extra services.
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",

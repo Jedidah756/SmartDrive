@@ -103,15 +103,15 @@ class Command(BaseCommand):
                 trip=trip,
                 status=Trip.Status.DEPARTED,
                 note="Departed from origin stop.",
-                latitude=-1.286389 + (index * 0.002),
-                longitude=36.817223 + (index * 0.003),
+                latitude=0.2083 + (index * 0.002),
+                longitude=35.0050 + (index * 0.003),
             )
             TripUpdate.objects.get_or_create(
                 trip=trip,
                 status=trip.status,
                 note="Current status snapshot.",
-                latitude=-1.285389 + (index * 0.002),
-                longitude=36.818223 + (index * 0.003),
+                latitude=0.2100 + (index * 0.002),
+                longitude=35.0080 + (index * 0.003),
             )
             Booking.objects.get_or_create(
                 student=students[index % len(students)],

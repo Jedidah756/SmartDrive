@@ -61,6 +61,11 @@ body::selection {
     z-index: 1;
 }
 
+.app-shell:not(:has(.sidebar)),
+.app-shell--auth {
+    grid-template-columns: 1fr;
+}
+
 .sidebar {
     display: flex;
     flex-direction: column;
@@ -468,7 +473,7 @@ body::selection {
     min-height: calc(100vh - 56px);
     display: grid;
     align-items: center;
-    padding: 24px 0;
+    padding: 24px 20px;
 }
 
 .auth-card {
@@ -602,12 +607,12 @@ body::selection {
 
 .auth-form {
     gap: 16px;
-    justify-items: center;
 }
 
 .field-group {
     display: grid;
     gap: 8px;
+    width: 100%;
 }
 
 .auth-input {
@@ -615,7 +620,10 @@ body::selection {
     padding: 14px 16px;
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--white);
+    font-size: 1rem;
+    width: 100%;
 }
 
 .auth-input:focus {
@@ -643,6 +651,33 @@ body::selection {
 .auth-footnote a {
     color: var(--amber-soft);
     font-weight: 700;
+}
+
+.password-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrap .auth-input {
+    padding-right: 48px;
+}
+
+.pw-toggle {
+    position: absolute;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--slate);
+    padding: 0;
+    line-height: 1;
+    transition: color 160ms ease;
+}
+
+.pw-toggle:hover {
+    color: var(--amber);
 }
 
 label {

@@ -5,7 +5,7 @@ from django.db.models import Avg, Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import FormView, RedirectView, TemplateView, CreateView
+from django.views.generic import FormView, RedirectView, TemplateView, CreateView, ListView, UpdateView
 
 import logging
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ from apps.schedules.services import ensure_daily_trips
 from apps.trips.models import Trip
 from apps.vehicles.models import Vehicle
 
-from .forms import LoginForm, StudentRegistrationForm, DriverRegistrationForm
+from .forms import LoginForm, StudentRegistrationForm, DriverRegistrationForm, AdminUserEditForm
 from .mixins import RoleRequiredMixin
 from .models import User
 
@@ -52,11 +52,13 @@ class LogoutView(LoginRequiredMixin, RedirectView):
 class StudentRegisterView(CreateView):
     template_name = "auth/register.html"
     form_class = StudentRegistrationForm
-    success_url = reverse_lazy("accounts:login")
+    success_url = reverse_lazy("accounts:dashboard-redirect")
 
     def form_valid(self, form):
-        messages.success(self.request, "Registration complete. You can now sign in.")
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        messages.success(self.request, "Welcome! Your account is ready.")
+        return response
 
 
 class DriverRegisterView(CreateView):
@@ -134,6 +136,27 @@ class DriverDashboardView(RoleRequiredMixin, TemplateView):
         return context
 
 
+class UserManagementView(RoleRequiredMixin, ListView):
+    template_name = "admin/users.html"
+    context_object_name = "users"
+    allowed_roles = (User.Role.TRANSPORT_ADMIN, User.Role.SUPER_ADMIN)
+
+    def get_queryset(self):
+        return User.objects.order_by("role", "name")
+
+
+class UserEditView(RoleRequiredMixin, UpdateView):
+    template_name = "admin/user_edit.html"
+    model = User
+    form_class = AdminUserEditForm
+    success_url = reverse_lazy("accounts:users")
+    allowed_roles = (User.Role.TRANSPORT_ADMIN, User.Role.SUPER_ADMIN)
+
+    def form_valid(self, form):
+        messages.success(self.request, "User updated successfully.")
+        return super().form_valid(form)
+
+
 class AdminDashboardView(RoleRequiredMixin, TemplateView):
     template_name = "admin/dashboard.html"
     allowed_roles = (User.Role.TRANSPORT_ADMIN, User.Role.SUPER_ADMIN)
@@ -142,15 +165,18 @@ class AdminDashboardView(RoleRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         today = ensure_daily_trips()
         active_trips = Trip.objects.filter(trip_date=today)
+        status_counts = {s: active_trips.filter(status=s).count() for s in [Trip.Status.SCHEDULED, Trip.Status.DEPARTED, Trip.Status.EN_ROUTE, Trip.Status.ARRIVED, Trip.Status.DELAYED, Trip.Status.CANCELLED]}
         context.update(
             {
                 "active_buses": active_trips.filter(status__in=[Trip.Status.DEPARTED, Trip.Status.EN_ROUTE]).count(),
                 "trips_today": active_trips.count(),
                 "student_count": User.objects.filter(role=User.Role.STUDENT).count(),
+                "driver_count": User.objects.filter(role=User.Role.DRIVER).count(),
                 "incidents_this_week": Incident.objects.filter(reported_at__week=today.isocalendar().week).count(),
                 "feedback_items": Feedback.objects.select_related("student", "trip__schedule__route").order_by("-created_at")[:6],
                 "route_ratings": Feedback.objects.values("trip__schedule__route__name").annotate(avg_rating=Avg("rating"), total=Count("id")).order_by("-avg_rating")[:5],
                 "vehicles": Vehicle.objects.order_by("plate_number")[:5],
+                "status_counts": status_counts,
             }
         )
         return context
