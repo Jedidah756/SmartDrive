@@ -82,6 +82,12 @@ if DATABASE_URL:
         "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
 elif os.getenv("DB_ENGINE", "sqlite") == "mysql":
+    try:
+        import MySQLdb  # noqa: F401 — validates mysqlclient is installed
+    except ImportError:
+        raise ImportError(
+            "mysqlclient is required for MySQL. Run: pip install mysqlclient"
+        )
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
