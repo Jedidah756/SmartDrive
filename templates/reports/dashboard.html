@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block page_title %}Reports{% endblock %}
+{% block content %}
+<div class="panel-grid">
+    <section class="card">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Export</span>
+                <h3>Generate Report</h3>
+            </div>
+        </div>
+        <form method="post" class="form-grid">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="field-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% render_field field %}
+                    {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+                </div>
+            {% endfor %}
+            <button class="button" type="submit">Export</button>
+        </form>
+    </section>
+    <section class="card">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">History</span>
+                <h3>Report History</h3>
+            </div>
+        </div>
+        {% for report in reports %}
+            <div class="sub-card" style="margin-top:12px;">
+                <strong>{{ report.get_report_type_display }}</strong>
+                <p>{{ report.date_range_start }} to {{ report.date_range_end }} &mdash; by {{ report.generated_by.name }}</p>
+            </div>
+        {% empty %}
+            <div class="empty-state"><h4>No reports yet</h4><p>Generate your first report using the form.</p></div>
+        {% endfor %}
+    </section>
+</div>
+{% if payload %}
+<div class="panel-grid">
+    <section class="card">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Analytics</span>
+                <h3>Trip Summary</h3>
+            </div>
+        </div>
+        <div class="metric-grid" style="margin-bottom:20px;">
+            <article class="metric-card">
+                <span class="meta">Total Trips</span>
+                <strong>{{ payload.total_trips }}</strong>
+            </article>
+            <article class="metric-card">
+                <span class="meta">Completed</span>
+                <strong>{{ payload.completed_trips }}</strong>
+            </article>
+            <article class="metric-card">
+                <span class="meta">Delayed</span>
+                <strong>{{ payload.delayed_trips }}</strong>
+            </article>
+            <article class="metric-card">
+                <span class="meta">Incidents</span>
+                <strong>{{ payload.incident_count }}</strong>
+            </article>
+        </div>
+        <canvas id="reportChart" height="140"></canvas>
+    </section>
+    <section class="card">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Performance</span>
+                <h3>Driver Performance</h3>
+            </div>
+        </div>
+        <table class="table-card" style="background:none;border:none;padding:0;">
+            <thead><tr><th>Driver</th><th>Total Trips</th><th>Completed</th></tr></thead>
+            <tbody>
+                {% for row in payload.driver_performance %}
+                    <tr>
+                        <td>{{ row.driver__name }}</td>
+                        <td>{{ row.total }}</td>
+                        <td>{{ row.arrived }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3">No data for this period.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}
+{% if payload %}
+<script>
+const reportCanvas = document.getElementById("reportChart");
+if (reportCanvas) {
+  const routeData = {{ payload.route_utilization|safe }};
+  new Chart(reportCanvas, {
+    type: "bar",
+    data: {
+      labels: routeData.map(r => r["schedule__route__name"] || "Unknown"),
+      datasets: [{
+        label: "Trips per Route",
+        data: routeData.map(r => r.total),
+        backgroundColor: "#f2b84b",
+        borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: "#dce8f8" } } },
+      scales: {
+        x: { ticks: { color: "#9fb4d1" }, grid: { color: "rgba(255,255,255,0.06)" } },
+        y: { ticks: { color: "#9fb4d1" }, grid: { color: "rgba(255,255,255,0.06)" } }
+      }
+    }
+  });
+}
+</script>
+{% endif %}
+{% endblock %}

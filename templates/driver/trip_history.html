@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block page_title %}Trip History{% endblock %}
+{% block content %}
+<section class="table-card">
+    <table>
+        <thead><tr><th>Date</th><th>Route</th><th>Vehicle</th><th>Status</th></tr></thead>
+        <tbody>
+            {% for trip in trips %}
+                <tr>
+                    <td>{{ trip.trip_date }}</td>
+                    <td>{{ trip.schedule.route.name }}</td>
+                    <td>{{ trip.schedule.vehicle.plate_number }}</td>
+                    <td>{{ trip.get_status_display }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No trip history yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

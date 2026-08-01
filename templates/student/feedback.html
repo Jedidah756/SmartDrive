@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block page_title %}Feedback{% endblock %}
+{% block content %}
+<section class="table-card">
+    <a class="button" href="{% url 'feedback:create' %}">Submit Feedback</a>
+    <table>
+        <thead><tr><th>Trip</th><th>Rating</th><th>Comment</th><th>Response</th></tr></thead>
+        <tbody>
+            {% for item in object_list %}
+                <tr>
+                    <td>{{ item.trip.schedule.route.name }}</td>
+                    <td>{{ item.rating }}/5</td>
+                    <td>{{ item.comment }}</td>
+                    <td>{{ item.admin_response|default:"Pending" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No feedback entries yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

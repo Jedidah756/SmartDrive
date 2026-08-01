@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block page_title %}Schedules{% endblock %}
+{% block content %}
+<section class="table-card">
+    <a class="button" href="{% url 'schedules:create' %}">Create Schedule</a>
+    <table>
+        <thead><tr><th>Route</th><th>Vehicle</th><th>Driver</th><th>Departure</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+            {% for schedule in schedules %}
+                <tr>
+                    <td>{{ schedule.route.name }}</td>
+                    <td>{{ schedule.vehicle.plate_number }}</td>
+                    <td>{{ schedule.driver.name }}</td>
+                    <td>{{ schedule.departure_time }}</td>
+                    <td>{{ schedule.get_status_display }}</td>
+                    <td><a href="{% url 'schedules:edit' schedule.pk %}">Edit</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

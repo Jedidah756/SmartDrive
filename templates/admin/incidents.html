@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block page_title %}Incident Log{% endblock %}
+{% block content %}
+<section class="table-card">
+    <table>
+        <thead><tr><th>Driver</th><th>Route</th><th>Severity</th><th>Description</th><th>Reported</th></tr></thead>
+        <tbody>
+            {% for incident in incidents %}
+                <tr>
+                    <td>{{ incident.driver.name }}</td>
+                    <td>{{ incident.trip.schedule.route.name }}</td>
+                    <td>{{ incident.get_severity_display }}</td>
+                    <td>{{ incident.description }}</td>
+                    <td>{{ incident.reported_at }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block page_title %}Student Feedback{% endblock %}
+{% block content %}
+<section class="table-card">
+    <table>
+        <thead><tr><th>Student</th><th>Route</th><th>Rating</th><th>Comment</th><th>Response</th><th></th></tr></thead>
+        <tbody>
+            {% for item in object_list %}
+                <tr>
+                    <td>{{ item.student.name }}</td>
+                    <td>{{ item.trip.schedule.route.name }}</td>
+                    <td>{{ item.rating }}/5</td>
+                    <td>{{ item.comment }}</td>
+                    <td>{{ item.admin_response|default:"Pending" }}</td>
+                    <td><a href="{% url 'feedback:respond' item.pk %}">Respond</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
