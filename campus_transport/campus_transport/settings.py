@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "apps.incidents",
     "apps.reports",
     "apps.notifications",
+    "apps.driver",
 ]
 
 MIDDLEWARE = [

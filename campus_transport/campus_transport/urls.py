@@ -16,6 +16,7 @@ urlpatterns = [
     path("incidents/", include(("apps.incidents.urls", "incidents"), namespace="incidents")),
     path("reports/", include(("apps.reports.urls", "reports"), namespace="reports")),
     path("notifications/", include(("apps.notifications.urls", "notifications"), namespace="notifications")),
+    path("driver/", include(("apps.driver.urls", "driver"), namespace="driver")),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

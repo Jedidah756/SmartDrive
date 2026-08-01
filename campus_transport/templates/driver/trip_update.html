@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block page_title %}Update Trip Status{% endblock %}
+{% block content %}
+<section class="card">
+    <h3>Update Trip Status</h3>
+    {% if trip %}
+        <div class="metric-grid" style="margin-bottom:1.5rem;">
+            <article class="metric-card"><span class="meta">Route</span><strong>{{ trip.schedule.route.name }}</strong></article>
+            <article class="metric-card"><span class="meta">Date</span><strong>{{ trip.trip_date }}</strong></article>
+            <article class="metric-card"><span class="meta">Vehicle</span><strong>{{ trip.schedule.vehicle.plate_number }}</strong></article>
+            <article class="metric-card"><span class="meta">Current Status</span><strong>{{ trip.get_status_display }}</strong></article>
+        </div>
+
+        <form method="post" class="form-grid">
+            {% csrf_token %}
+            <div>
+                <label>Status</label>
+                <select name="status">
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if trip.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>Note (optional)</label>
+                <textarea name="note" placeholder="e.g. Traffic on the Eldoret–Kapsabet road"></textarea>
+            </div>
+            <div>
+                <label>Latitude (optional)</label>
+                <input type="number" step="0.0000001" name="latitude" placeholder="0.5171">
+            </div>
+            <div>
+                <label>Longitude (optional)</label>
+                <input type="number" step="0.0000001" name="longitude" placeholder="35.2909">
+            </div>
+            <button class="button" type="submit">Submit Status Update</button>
+        </form>
+    {% else %}
+        <p>No assigned trip found. Please check back when a trip is scheduled for you.</p>
+    {% endif %}
+</section>
+{% endblock %}
+

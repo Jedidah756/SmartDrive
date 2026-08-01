@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block page_title %}My Assigned Routes{% endblock %}
+{% block content %}
+<section class="table-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3>Routes Assigned to You</h3>
+        <a class="button" href="{% url 'trips:history' %}">Trip History</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Start → End</th>
+                <th>Vehicle</th>
+                <th>Departure</th>
+                <th>Days of Week</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+                <tr>
+                    <td>{{ schedule.route.name }}</td>
+                    <td>{{ schedule.route.start_point }} → {{ schedule.route.end_point }}</td>
+                    <td>{{ schedule.vehicle.plate_number }} ({{ schedule.vehicle.model }})</td>
+                    <td>{{ schedule.departure_time }}</td>
+                    <td>
+                        {% for day in schedule.days_of_week %}
+                            <span class="status-pill">{{ day|title }}</span>
+                        {% endfor %}
+                    </td>
+                    <td><span class="status-pill {{ schedule.status }}">{{ schedule.get_status_display }}</span></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">No routes are currently assigned to you.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
+
