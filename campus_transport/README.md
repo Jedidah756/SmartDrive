@@ -2,6 +2,10 @@
 
 Campus Transport is a Django-based university transport platform for students, drivers, transport administrators, and super administrators. It supports route management, trip tracking, simulated live bus positions, student feedback, reports, and exportable analytics.
 
+## Live Demo
+
+[Open Smart Transport](https://smart-drive.onrender.com/)
+
 ## Features
 
 - Role-based access control for students, drivers, transport admins, and super admins
