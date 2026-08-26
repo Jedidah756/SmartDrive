@@ -72,3 +72,7 @@ class DriverRegistrationForm(forms.ModelForm):
             user.save()
         return user
 
+class AdminUserEditForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["name", "email", "role", "student_id", "employee_id", "phone", "is_active"]

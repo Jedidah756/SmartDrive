@@ -9,6 +9,7 @@ from django.views.generic import ListView
 
 from apps.accounts.mixins import RoleRequiredMixin
 from apps.accounts.models import User
+from apps.notifications.services import notify_trip_students
 from apps.schedules.services import ensure_daily_trips
 
 from .forms import TripUpdateForm
@@ -31,6 +32,7 @@ class DriverTripUpdateView(RoleRequiredMixin, View):
             if update.status == Trip.Status.ARRIVED:
                 trip.actual_arrival = timezone.now()
             trip.save(update_fields=["status", "actual_departure", "actual_arrival"])
+            notify_trip_students(trip, update.status)
             messages.success(request, "Trip update submitted.")
         else:
             messages.error(request, "Please correct the trip update fields.")

@@ -2,46 +2,94 @@
 {% block page_title %}Operations Dashboard{% endblock %}
 {% block content %}
 <div class="metric-grid">
-    <article class="metric-card"><span class="meta">Active Buses</span><strong>{{ active_buses }}</strong></article>
-    <article class="metric-card"><span class="meta">Trips Today</span><strong>{{ trips_today }}</strong></article>
-    <article class="metric-card"><span class="meta">Students</span><strong>{{ student_count }}</strong></article>
-    <article class="metric-card"><span class="meta">Incidents This Week</span><strong>{{ incidents_this_week }}</strong></article>
+    <article class="metric-card">
+        <span class="meta">Active Buses</span>
+        <strong>{{ active_buses }}</strong>
+        <p>Currently departed or en route.</p>
+    </article>
+    <article class="metric-card">
+        <span class="meta">Trips Today</span>
+        <strong>{{ trips_today }}</strong>
+        <p>Scheduled departures for today.</p>
+    </article>
+    <article class="metric-card">
+        <span class="meta">Students</span>
+        <strong>{{ student_count }}</strong>
+        <p>Registered student accounts.</p>
+    </article>
+    <article class="metric-card">
+        <span class="meta">Drivers</span>
+        <strong>{{ driver_count }}</strong>
+        <p>Active driver accounts.</p>
+    </article>
+    <article class="metric-card">
+        <span class="meta">Incidents This Week</span>
+        <strong>{{ incidents_this_week }}</strong>
+        <p>Reported operational issues.</p>
+    </article>
 </div>
 <div class="panel-grid">
     <section class="card map-panel">
-        <div class="section-heading"><h3>Live Fleet Map</h3></div>
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Live Tracking</span>
+                <h3>Live Fleet Map</h3>
+            </div>
+        </div>
         <div id="admin-map" class="map-canvas skeleton" data-live-map data-endpoint="{% url 'trips:api-live' %}"></div>
     </section>
     <section class="card">
-        <div class="section-heading"><h3>Route Ratings</h3></div>
-        {% for route in route_ratings %}
-            <div class="card" style="margin-top:12px;">
-                <strong>{{ route.trip__schedule__route__name }}</strong>
-                <p>{{ route.avg_rating|floatformat:1 }}/5 average from {{ route.total }} review{{ route.total|pluralize }}</p>
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Analytics</span>
+                <h3>Trip Status Today</h3>
             </div>
-        {% empty %}
-            <p>No route feedback yet.</p>
-        {% endfor %}
+        </div>
+        <canvas id="statusChart" height="220"></canvas>
     </section>
 </div>
-<section class="table-card">
-    <h3>Recent Feedback</h3>
-    <table>
-        <thead><tr><th>Student</th><th>Route</th><th>Rating</th><th>Comment</th></tr></thead>
-        <tbody>
-            {% for item in feedback_items %}
-                <tr>
-                    <td>{{ item.student.name }}</td>
-                    <td>{{ item.trip.schedule.route.name }}</td>
-                    <td>{{ item.rating }}/5</td>
-                    <td>{{ item.comment }}</td>
-                </tr>
-            {% empty %}
-                <tr><td colspan="4">No feedback available.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</section>
+<div class="panel-grid">
+    <section class="card">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Performance</span>
+                <h3>Route Ratings</h3>
+            </div>
+            <a class="button button-ghost" href="{% url 'feedback:list' %}">All Feedback</a>
+        </div>
+        {% for route in route_ratings %}
+            <div class="sub-card" style="margin-top:12px;">
+                <strong>{{ route.trip__schedule__route__name }}</strong>
+                <p>{{ route.avg_rating|floatformat:1 }}/5 average &mdash; {{ route.total }} review{{ route.total|pluralize }}</p>
+            </div>
+        {% empty %}
+            <div class="empty-state"><h4>No feedback yet</h4><p>Route ratings will appear here once students submit feedback.</p></div>
+        {% endfor %}
+    </section>
+    <section class="table-card">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Student Voice</span>
+                <h3>Recent Feedback</h3>
+            </div>
+        </div>
+        <table>
+            <thead><tr><th>Student</th><th>Route</th><th>Rating</th><th>Comment</th></tr></thead>
+            <tbody>
+                {% for item in feedback_items %}
+                    <tr>
+                        <td>{{ item.student.name }}</td>
+                        <td>{{ item.trip.schedule.route.name }}</td>
+                        <td>{{ item.rating }}/5</td>
+                        <td>{{ item.comment }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4">No feedback available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
 {% endblock %}
 {% block extra_js %}
 <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
@@ -49,8 +97,9 @@
 const adminMapNode = document.getElementById("admin-map");
 if (adminMapNode && window.google) {
   const map = new google.maps.Map(adminMapNode, {
-center: { lat: 0.1835663, lng: 35.1257054 },
-zoom: 14
+    center: { lat: 0.1835663, lng: 35.1257054 },
+    zoom: 14,
+    styles: [{ elementType: "geometry", stylers: [{ color: "#0a1628" }] }]
   });
   const markers = {};
   const refresh = async () => {
@@ -67,6 +116,33 @@ zoom: 14
   };
   refresh();
   setInterval(refresh, 15000);
+}
+
+const statusChart = document.getElementById("statusChart");
+if (statusChart) {
+  const counts = {{ status_counts|safe }};
+  new Chart(statusChart, {
+    type: "doughnut",
+    data: {
+      labels: ["Scheduled", "Departed", "En Route", "Arrived", "Delayed", "Cancelled"],
+      datasets: [{
+        data: [
+          counts.scheduled || 0,
+          counts.departed || 0,
+          counts.en_route || 0,
+          counts.arrived || 0,
+          counts.delayed || 0,
+          counts.cancelled || 0
+        ],
+        backgroundColor: ["#9fb4d1", "#f2b84b", "#ffd48a", "#57d29d", "#f0c46d", "#ff7b72"],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: "#dce8f8" } } }
+    }
+  });
 }
 </script>
 {% endblock %}

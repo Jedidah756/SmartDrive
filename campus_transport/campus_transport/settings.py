@@ -11,18 +11,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
 
-allowed_hosts_env = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
-ALLOWED_HOSTS = []
-for host in allowed_hosts_env.split(","):
-    host = host.strip()
-    if not host:
-        continue
-    if host == "*":
-        ALLOWED_HOSTS = ["*"]
-        break
-    if host.startswith("*."):
-        host = "." + host[2:]
-    ALLOWED_HOSTS.append(host)
+allowed_hosts_env = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").strip()
+if allowed_hosts_env == "*":
+    ALLOWED_HOSTS = ["*"]
+else:
+    ALLOWED_HOSTS = []
+    for host in allowed_hosts_env.split(","):
+        host = host.strip()
+        if not host:
+            continue
+        if host.startswith("*."):
+            host = "." + host[2:]
+        ALLOWED_HOSTS.append(host)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "apps.feedback",
     "apps.incidents",
     "apps.reports",
+    "apps.notifications",
+    "apps.driver",
 ]
 
 MIDDLEWARE = [
@@ -80,8 +82,25 @@ if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
+elif os.getenv("DB_ENGINE", "sqlite") == "mysql":
+    try:
+        import MySQLdb  # noqa: F401 — validates mysqlclient is installed
+    except ImportError:
+        raise ImportError(
+            "mysqlclient is required for MySQL. Run: pip install mysqlclient"
+        )
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("DB_NAME", "campus_transport"),
+            "USER": os.getenv("DB_USER", "root"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+            "PORT": os.getenv("DB_PORT", "3306"),
+            "OPTIONS": {"charset": "utf8mb4"},
+        }
+    }
 else:
-    # SQLite is the default local-development database so the project can run without extra services.
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",

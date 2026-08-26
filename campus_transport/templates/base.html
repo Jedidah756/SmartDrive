@@ -14,7 +14,7 @@
 </head>
 <body data-maps-key="{{ google_maps_api_key }}">
     <div class="app-backdrop"></div>
-    <div class="app-shell">
+    <div class="app-shell{% if not request.user.is_authenticated %} app-shell--auth{% endif %}">
         {% if request.user.is_authenticated %}
             <aside class="sidebar" id="sidebar">
                 <div>
@@ -26,8 +26,10 @@
                         <a href="{% url 'accounts:dashboard-redirect' %}">Dashboard</a>
                         {% if request.user.is_student %}
                             <a href="{% url 'accounts:student-dashboard' %}">My Trips</a>
+                            <a href="{% url 'schedules:list' %}">Schedules</a>
                             <a href="{% url 'bookings:list' %}">Bookings</a>
                             <a href="{% url 'feedback:list' %}">Feedback</a>
+                            <a href="{% url 'notifications:inbox' %}">Notifications</a>
                         {% endif %}
                         {% if request.user.is_driver %}
                             <a href="{% url 'accounts:driver-dashboard' %}">Assigned Trip</a>
@@ -36,10 +38,12 @@
                         {% endif %}
                         {% if request.user.is_transport_admin or request.user.is_super_admin %}
                             <a href="{% url 'accounts:admin-dashboard' %}">Operations</a>
+                            <a href="{% url 'accounts:users' %}">Users</a>
                             <a href="{% url 'vehicles:list' %}">Vehicles</a>
                             <a href="{% url 'routes:list' %}">Routes</a>
                             <a href="{% url 'schedules:list' %}">Schedules</a>
                             <a href="{% url 'reports:dashboard' %}">Reports</a>
+                            <a href="{% url 'notifications:sms-log' %}">SMS Log</a>
                         {% endif %}
                         {% if request.user.is_super_admin %}
                             <a href="/django-admin/">Django Admin</a>

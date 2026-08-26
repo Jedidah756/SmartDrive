@@ -11,4 +11,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("[data-auto-dismiss]").forEach((node) => {
     setTimeout(() => node.remove(), 4000);
   });
+
+  document.querySelectorAll("[data-pw-toggle]").forEach((btn) => {
+    const wrap = btn.closest(".password-wrap");
+    const input = wrap && wrap.querySelector("input");
+    if (!input) return;
+    btn.addEventListener("click", () => {
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      btn.textContent = isHidden ? "\uD83D\uDE48" : "\uD83D\uDC41";
+    });
+  });
 });

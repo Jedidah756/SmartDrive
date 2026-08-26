@@ -22,7 +22,6 @@ class ReportsDashboardView(RoleRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         context["reports"] = Report.objects.select_related("generated_by")
         context["payload"] = None
-        context["chart_data_json"] = json.dumps({})
         return context
 
     def form_valid(self, form):
@@ -33,10 +32,16 @@ class ReportsDashboardView(RoleRequiredMixin, FormView):
             generated_by=self.request.user,
         )
         payload = build_report_payload(report.date_range_start, report.date_range_end)
-        if form.cleaned_data["export_format"] == "csv":
+        export_format = form.cleaned_data["export_format"]
+        if export_format == "csv":
             return export_report_csv(payload)
-        messages.success(self.request, "PDF report generated successfully.")
-        return export_report_pdf(payload)
+        if export_format == "pdf":
+            return export_report_pdf(payload)
+        # preview in page
+        messages.success(self.request, "Report generated successfully.")
+        context = self.get_context_data(form=form)
+        context["payload"] = payload
+        return self.render_to_response(context)
 
 
 class ReportsApiView(RoleRequiredMixin, View):

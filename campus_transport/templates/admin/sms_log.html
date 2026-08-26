@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block page_title %}SMS Notification Log{% endblock %}
+{% block content %}
+<div class="metric-grid">
+    <article class="metric-card">
+        <span class="meta">Total Sent</span>
+        <strong>{{ paginator.count }}</strong>
+        <p>Simulated SMS notifications logged.</p>
+    </article>
+</div>
+<section class="table-card">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Notifications</span>
+            <h3>SMS Log</h3>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Recipient</th>
+                <th>Phone</th>
+                <th>Route</th>
+                <th>Trigger</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Sent At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sms in notifications %}
+                <tr>
+                    <td>{{ sms.recipient.name }}</td>
+                    <td>{{ sms.recipient.phone|default:"—" }}</td>
+                    <td>{{ sms.trip.schedule.route.name }}</td>
+                    <td>
+                        <span class="status-pill {% if sms.trigger == 'trip_delayed' or sms.trigger == 'breakdown' %}delayed{% elif sms.trigger == 'trip_cancelled' %}cancelled{% else %}arrived{% endif %}">
+                            {{ sms.get_trigger_display }}
+                        </span>
+                    </td>
+                    <td>{{ sms.message }}</td>
+                    <td><span class="status-pill arrived">{{ sms.get_status_display }}</span></td>
+                    <td>{{ sms.sent_at|date:"d M Y H:i" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7">No SMS notifications yet. They trigger when a driver updates a trip status.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if is_paginated %}
+        <div style="margin-top:16px;display:flex;gap:10px;">
+            {% if page_obj.has_previous %}
+                <a class="button button-ghost" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+            <span style="padding:12px 16px;color:var(--slate);">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a class="button button-ghost" href="?page={{ page_obj.next_page_number }}">Next</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

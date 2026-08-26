@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Driver Sign In | {{ institution_name }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+    <section class="auth-stage">
+        <div class="auth-showcase">
+            <span class="eyebrow">Driver Portal</span>
+            <h1>Drive your day, stay on schedule.</h1>
+            <p>Sign in to view your assigned routes, update trip status in real time, and report incidents or breakdowns instantly.</p>
+            <div class="auth-feature-list">
+                <article class="auth-feature">
+                    <strong>Assigned routes at a glance</strong>
+                    <p>See every route, vehicle, and departure time for your shift.</p>
+                </article>
+                <article class="auth-feature">
+                    <strong>Live trip updates</strong>
+                    <p>Mark trips as departed, en route, arrived, delayed, or breakdown.</p>
+                </article>
+                <article class="auth-feature">
+                    <strong>Incident reporting</strong>
+                    <p>Log accidents, breakdowns, and delays directly from the road.</p>
+                </article>
+            </div>
+        </div>
+
+        <div class="auth-card auth-form-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Driver Access</span>
+                <h2>Driver sign in</h2>
+                <p>Use your driver account email to continue.</p>
+            </div>
+
+            <form method="post" class="form-grid auth-form">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="field-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% render_field field class+="auth-input" placeholder=field.field.widget.attrs.placeholder %}
+                        {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+                    </div>
+                {% endfor %}
+                {% for error in form.non_field_errors %}<small>{{ error }}</small>{% endfor %}
+                <button class="button auth-submit" type="submit">Sign In to Driver Portal</button>
+            </form>
+
+            <div class="auth-footnote">
+                <p>New driver?</p>
+                <a href="{% url 'accounts:driver-register' %}">Register as a driver</a>
+            </div>
+            <div class="auth-footnote">
+                <p>Student or admin?</p>
+                <a href="{% url 'accounts:login' %}">Use the main sign-in</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+

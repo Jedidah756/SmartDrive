@@ -10,6 +10,8 @@ from .views import (
     LogoutView,
     StudentDashboardView,
     StudentRegisterView,
+    UserEditView,
+    UserManagementView,
 )
 
 urlpatterns = [
@@ -22,4 +24,6 @@ urlpatterns = [
     path("student/", StudentDashboardView.as_view(), name="student-dashboard"),
     path("driver/", DriverDashboardView.as_view(), name="driver-dashboard"),
     path("admin/", AdminDashboardView.as_view(), name="admin-dashboard"),
+    path("admin/users/", UserManagementView.as_view(), name="users"),
+    path("admin/users/<int:pk>/edit/", UserEditView.as_view(), name="user-edit"),
 ]

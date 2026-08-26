@@ -36,7 +36,14 @@
                 {% for field in form %}
                     <div class="field-group">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {% render_field field class+="auth-input" placeholder=field.label %}
+                        {% if field.field.widget.input_type == "password" %}
+                            <div class="password-wrap">
+                                {% render_field field class+="auth-input" placeholder=field.label %}
+                                <button type="button" class="pw-toggle" data-pw-toggle aria-label="Toggle password visibility">&#128065;</button>
+                            </div>
+                        {% else %}
+                            {% render_field field class+="auth-input" placeholder=field.label %}
+                        {% endif %}
                         {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
                     </div>
                 {% endfor %}
@@ -49,6 +56,10 @@
                 <a href="{% url 'accounts:register' %}">Create an account</a>
                 <p>Driving for the university?</p>
                 <a href="{% url 'accounts:driver-register' %}">Create a driver account</a>
+            </div>
+            <div class="auth-footnote">
+                <p>Driver?</p>
+                <a href="{% url 'driver:login' %}">Sign in to the driver portal</a>
             </div>
         </div>
     </section>
